@@ -27,7 +27,7 @@ class TransactionFactory extends Factory
             'payment' =>$status == '2' ? $payment : "",
             'status'=> $status,
             'created_at' => $this->faker->dateTimeThisDecade(),
-            'updated_at' => $status != 'Paying' ? $this->faker->dateTimeThisDecade() : NULL,
+            'updated_at' => $status != '1' ? $this->faker->dateTimeThisDecade() : NULL,
         ];
     }
 }

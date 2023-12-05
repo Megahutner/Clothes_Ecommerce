@@ -5,7 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Customer;
+use App\Models\PaymentLog;
 use App\Models\Transaction;
+use App\Models\User;
+
+
 
 class CustomerSeeder extends Seeder
 {
@@ -16,7 +20,13 @@ class CustomerSeeder extends Seeder
     {
         Customer::factory()
          -> count(25)
-         -> hasTransactions(10)
+         -> has(Transaction::factory()
+         -> count(25)
+         -> hasPaymentLogs(1)
+          )
+         -> create();
+         User::factory()
+         -> count(25)
          -> create();
     }
 }

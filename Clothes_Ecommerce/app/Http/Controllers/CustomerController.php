@@ -11,9 +11,16 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filter = new CustomerFilter();
+        $filterItems = $filter->transform($request);  //[['column','operator','value']]
+        $includeTransactions = $request->query('includeTransactions');
+        $customers = Customer::where($filterItems);
+        if($includeTransactions){
+            $customers = $customers->with('transactions');
+        }
+        return new CustomerCollection($customers->paginate()-> appends($request->query()));
     }
 
     /**
@@ -37,7 +44,12 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        //
+        //return $customer;
+        $includeTransactions = request()->query('includeTransactions');
+        if($includeTransactions){
+            return new CustomerResource($customer->loadMissing('transactions'));
+        }
+        return new CustomerResource($customer);
     }
 
     /**

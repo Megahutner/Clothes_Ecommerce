@@ -13,8 +13,12 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
     
-    public function categories(){
-        return $this-> belongsToMany(Category::class,'product_category','product_id','category_id');
+    // public function categories(){
+    //     return $this-> belongsToMany(Category::class,'product_category','product_id','category_id');
 
+    // }
+
+    public function category(){
+        return $this->belongsTo(Category::class);
     }
 }

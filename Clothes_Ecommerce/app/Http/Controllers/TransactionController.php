@@ -11,11 +11,19 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        //return new TransactionCollection(Transaction::paginate());
+        $filter = new TransactionFilter();
+        $queryItems = $filter->transform($request);  //[['column','operator','value']]
+        if(count($queryItems)==0){
+            return new TransactionCollection(Transaction::paginate());
+        }
+        else{
+            $transactions = Transaction::where($queryItems)->paginate();
+            return new TransactionCollection($transactions->appends($request->query()));
+        }
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -37,7 +45,7 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        //
+        return new TransactionResource($transaction);
     }
 
     /**
