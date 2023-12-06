@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\User\UserCollection;
 use App\Services\UserService;
+use Carbon\Carbon;
 
 
 
@@ -148,6 +149,7 @@ class AdminController extends Controller
                 else{
                     $token = new Token;
                     $token->token = $api_token;
+                    $token->expires_at = Carbon::now()->addMinutes(2) ;
                     $token->save();
                 }
                 $model->remember_token= $api_token;
