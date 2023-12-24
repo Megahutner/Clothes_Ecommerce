@@ -21,9 +21,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(){
 
     Route::apiResource('users', AdminController::class);
+    Route::apiResource('customers', CustomerController::class);
+    Route::apiResource('brands', BrandController::class);
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('products', ProductController::class);
+    Route::apiResource('transactions', TransactionController::class);
+
+
     Route::post('users/login',['uses' => 'AdminController@login']);
+    Route::get('idk/currentMonthStatistic',['uses' => 'TransactionController@currentMonthStatistic']);
     Route::get('check',['uses' => 'AdminController@checkToken']);
     Route::get('token',['uses' => 'AdminController@getToken']);
     Route::post('users/logout',['uses' => 'AdminController@logout']);
+    Route::post('customers/bulk',['uses' => 'CustomerController@bulkStore']);
+
 
 });

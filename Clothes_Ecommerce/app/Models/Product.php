@@ -9,16 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    public function brand(){
-        return $this->belongsTo(Brand::class);
-    }
-    
-    // public function categories(){
-    //     return $this-> belongsToMany(Category::class,'product_category','product_id','category_id');
-
-    // }
-
-    public function category(){
-        return $this->belongsTo(Category::class);
+    public function brand_category_products(){
+        return $this-> hasMany(brand_category_product::class);
     }
 }

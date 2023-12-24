@@ -2,9 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Models\Transaction;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Http\Resources\Transaction\TransactionResource;
+use App\Http\Resources\Transaction\TransactionCollection;
+use App\Filter\TransactionFilter;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -70,5 +78,24 @@ class TransactionController extends Controller
     public function destroy(Transaction $transaction)
     {
         //
+    }
+
+    public function currentMonthStatistic(Request $request){
+        $transactions = Transaction::all()
+        ->where('status','=','2')
+        ->whereBetween('updated_at',[Carbon::now()->addDays(-1)->startOfDay(),Carbon::now()->addDays(-1)->endOfDay()]);
+        if(count($transactions) > 0){
+            return response()->json([
+                'code' => '200',
+                'message' => 'success',
+                'data' => new TransactionCollection($transactions)
+            ]);
+        }
+        else{
+            return response()->json([
+                'code' => '422',
+                'message' => 'failed',
+            ]);
+        }
     }
 }

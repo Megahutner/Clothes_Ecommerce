@@ -5,6 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Customer\CustomerResource;
+use App\Http\Resources\Customer\CustomerCollection;
+use App\Filter\CustomerFilter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use App\Http\Requests\BulkStoreCustomerRequest;
+
 
 class CustomerController extends Controller
 {
@@ -26,7 +34,7 @@ class CustomerController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(StoreCustomerRequest $request)
     {
         //
     }
@@ -36,7 +44,12 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        //
+        return new CustomerResource(Customer::create($request->all()));
+    }
+
+    public function bulkStore(BulkStoreCustomerRequest $request){
+        $bulk = collect($request->all());
+        Customer::insert($bulk->toArray());
     }
 
     /**
@@ -49,7 +62,13 @@ class CustomerController extends Controller
         if($includeTransactions){
             return new CustomerResource($customer->loadMissing('transactions'));
         }
-        return new CustomerResource($customer);
+        //return new CustomerResource($customer);
+        //return Response::json((new CustomerResource($customer)),'200');
+        return response()->json([
+            'code' => '200',
+            'message' => 'success',
+            'data' => new CustomerResource($customer)
+        ]);
     }
 
     /**
@@ -65,7 +84,7 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        //
+        $customer->update($request->all());
     }
 
     /**

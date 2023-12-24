@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Token;
-use App\Http\Requests\StoreTokenRequest;
-use App\Http\Requests\UpdateTokenRequest;
+use App\Models\brand_category_product;
+use App\Http\Requests\Storebrand_category_productRequest;
+use App\Http\Requests\Updatebrand_category_productRequest;
 
-class TokenController extends Controller
+class BrandCategoryProductController extends Controller
 {
-    protected UserService $userService;
-
-    // Dependencies injection
-    public function __construct( UserService $userService){
-        $this-> userService = $userService;
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -34,7 +27,7 @@ class TokenController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTokenRequest $request)
+    public function store(Storebrand_category_productRequest $request)
     {
         //
     }
@@ -42,7 +35,7 @@ class TokenController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Token $token)
+    public function show(brand_category_product $brand_category_product)
     {
         //
     }
@@ -50,7 +43,7 @@ class TokenController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Token $token)
+    public function edit(brand_category_product $brand_category_product)
     {
         //
     }
@@ -58,7 +51,7 @@ class TokenController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTokenRequest $request, Token $token)
+    public function update(Updatebrand_category_productRequest $request, brand_category_product $brand_category_product)
     {
         //
     }
@@ -66,7 +59,7 @@ class TokenController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Token $token)
+    public function destroy(brand_category_product $brand_category_product)
     {
         //
     }

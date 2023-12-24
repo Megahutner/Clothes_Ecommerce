@@ -102,8 +102,9 @@ class AdminController extends Controller
 
     public function checkToken(Request $request){
         $token = $request->bearerToken();
-        $checkToken = Token::where("token",'=', $token)->first();
-        if ( $checkToken != null){
+        //$checkToken = Token::where("token",'=', $token)->first();
+        $checkToken = $userService->checkAuthen($token);
+        if ($checkToken){
             $data=[
                 "code" => 200,
                 "status" => "Success",
@@ -114,7 +115,7 @@ class AdminController extends Controller
         else{
             $data=[
                 "code" => 422,
-                "status" => "Failed",
+                "status" => "Unauthorized",
             ];
         }
         return response()->json($data);

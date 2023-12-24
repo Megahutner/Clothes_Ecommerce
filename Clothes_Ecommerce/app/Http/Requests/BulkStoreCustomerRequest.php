@@ -3,15 +3,16 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreCustomerRequest extends FormRequest
+class BulkStoreCustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,11 +23,10 @@ class StoreCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'address' => ['required'],
-            'city' => ['required'],
-            'dob'=> ['required'],
-            'email' => ['required','email'=> 'email:rfc,dns'],
+            '*.name' => ['required'],
+            '*.address' => ['required'],
+            '*.city' => ['required'],
+            '*.email' => ['required','email'=> 'email:rfc,dns'],
         ];
     }
 }

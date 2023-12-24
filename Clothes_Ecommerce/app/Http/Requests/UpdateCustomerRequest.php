@@ -21,8 +21,22 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
+        $method = $this->method();
+        if($method == "PUT"){
+            return [    
+                'name' => ['required'],
+                'address' => ['required'],
+                'city' => ['required'],
+                'email' => ['required','email'=> 'email:rfc,dns'],
         ];
+        }
+        else{
+            return [    
+                'name' => ['sometimes','required'],
+                'address' => ['sometimes','required'],
+                'city' => ['sometimes','required'],
+                'email' => ['sometimes','required','email'=> 'email:rfc,dns'],
+        ];
+        }
     }
 }
