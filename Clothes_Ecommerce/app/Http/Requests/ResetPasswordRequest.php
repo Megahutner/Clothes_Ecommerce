@@ -7,9 +7,9 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreAdminRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
-  /**
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
@@ -25,27 +25,17 @@ class StoreAdminRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required',"unique:users"],
-            'password' => ['required'],
-
-            'email' => ['required',"unique:users",'email'=> 'email:rfc,dns'],
-            'type' => ['required','min:0','max:3'],
-
+            'name' => ['required'],
+            'code' => ['required'],
+            'newPassword' => ['required'],
         ];
     }
 
     public function messages(){
         return [
-            'name.unique'=> "Name already exists",
             'name.required'=> "Name is required",
-            'password.required'=> "Password is required",
-            'email.unique'=> "Email already exists",
-            'email.required'=> "Email is required",
-            'email.email'=> "Email format is wrong",
-            'type.required'=> "Type is required",
-            'type.min'=> "Unauthorized role",
-            'type.max'=> "Unauthorized role",
-
+            'code.required'=> "Code is required",
+            'newPasswrod.required'=> "New password is required",
         ];
     }
 

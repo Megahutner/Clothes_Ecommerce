@@ -22,7 +22,6 @@ class BrandFactory extends Factory
             return [
                 'name' => $name,
                 'description' => $this->faker->text(),
-                'brandId' => $this->faker->regexify('[A-Za-z0-9]{10}'),
             ];
         
     }

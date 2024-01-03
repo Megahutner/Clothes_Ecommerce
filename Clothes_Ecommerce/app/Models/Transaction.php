@@ -16,4 +16,8 @@ class Transaction extends Model
     public function paymentlogs(){
         return $this->hasMany(PaymentLog::class);
     }
+
+    public function transaction_products(){
+        return $this->hasMany(transaction_product::class);
+    }
 }

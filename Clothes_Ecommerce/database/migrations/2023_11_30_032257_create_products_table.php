@@ -15,12 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
-            $table->string('productId');
             $table->float('price');
             $table->integer('available');
             $table->string('image')->nullable();
-            $table->tinyInteger('status');
             $table->timestamps();
+            $table->foreignId('category_id')->default(0)->references('id')->on('categories');
         });
     }
 

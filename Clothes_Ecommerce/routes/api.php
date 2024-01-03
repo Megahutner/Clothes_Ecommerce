@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(){
 
+    // Laravel's premapped CRUD APIs
     Route::apiResource('users', AdminController::class);
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('brands', BrandController::class);
@@ -28,12 +29,39 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(
     Route::apiResource('transactions', TransactionController::class);
 
 
+    // Custom APIs
     Route::post('users/login',['uses' => 'AdminController@login']);
-    Route::get('idk/currentMonthStatistic',['uses' => 'TransactionController@currentMonthStatistic']);
+    Route::post('users/logout',['uses' => 'AdminController@logout']);
+    Route::post('users/reset',['uses' => 'AdminController@resetPassword']);
+
+
+    Route::post('customers/login',['uses' => 'CustomerController@login']);
+    Route::post('customers/verify',['uses' => 'CustomerController@verify']);
+    Route::post('customers/sendReset',['uses' => 'CustomerController@sendResetMail']);
+    Route::post('customers/reset',['uses' => 'CustomerController@resetPassword']);
+    Route::post('customers/logout',['uses' => 'CustomerController@logout']);
+    Route::post('customers/bulk',['uses' => 'CustomerController@bulkStore']);
+
+
+    Route::post('transactions/addToCart', ['uses'=>'TransactionController@addToCart']);
+    Route::post('transactions/removeFromCart', ['uses'=>'TransactionController@removeFromCart']);
+    Route::post('transactions/makeTransaction', ['uses'=>'TransactionController@makeTransaction']);
+    Route::post('transactions/toCheckOut', ['uses'=>'TransactionController@toCheckOut']);
+    Route::post('transactions/endTransaction', ['uses'=>'TransactionController@endTransaction']);
+
+
+
+
+
+    Route::get('basic/general',['uses' => 'BasicController@generalStatistics']);
+    Route::get('basic/latestCustomers',['uses' => 'BasicController@latestCustomerReg']);
+    Route::get('basic/latestTransactions',['uses' => 'BasicController@latestTransactions']);
+    Route::get('basic/currentMonthStatistic',['uses' => 'BasicController@currentMonthStatistic']);
+    
     Route::get('check',['uses' => 'AdminController@checkToken']);
     Route::get('token',['uses' => 'AdminController@getToken']);
-    Route::post('users/logout',['uses' => 'AdminController@logout']);
-    Route::post('customers/bulk',['uses' => 'CustomerController@bulkStore']);
+
+    Route::get('show',['uses' => 'ProductController@customerShow']);
 
 
 });

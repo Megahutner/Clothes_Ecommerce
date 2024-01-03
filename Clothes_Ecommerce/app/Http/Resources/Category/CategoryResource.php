@@ -4,6 +4,8 @@ namespace App\Http\Resources\Category;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Product\ProductResource;
+
 
 class CategoryResource extends JsonResource
 {
@@ -18,8 +20,8 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'categoryId'=> $this->categoryId,
             'createdDate' => $this->created_at,
             'updatedDate' => $this->updated_at,
+            'products'=>ProductResource::collection($this->whenLoaded('products')),
         ];    }
 }

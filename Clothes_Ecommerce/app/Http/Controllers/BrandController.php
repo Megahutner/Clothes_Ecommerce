@@ -8,14 +8,34 @@ use App\Http\Requests\UpdateBrandRequest;
 use App\Http\Resources\Brand\BrandResource;
 use App\Http\Resources\Brand\BrandCollection;
 
+use App\Http\Controllers\Controller;
+use App\Filter\BrandFilter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Models\Token;
+use Carbon\Carbon;
+
 class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filter = new BrandFilter();
+        $filterItems = $filter->transform($request);  //[['column','operator','value']]
+        //$includeTransactions = $request->query('includeTransactions');
+        $brands = Brand::where($filterItems);
+        // if($includeTransactions){
+        //     $customers = $customers->with('transactions');
+        // }
+        return response()->json([
+            'code' => '200',
+            'message' => 'success',
+            'data' => new BrandCollection($brands->paginate()-> appends($request->query()))
+        ]);
     }
 
     /**
@@ -23,7 +43,7 @@ class BrandController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -31,7 +51,11 @@ class BrandController extends Controller
      */
     public function store(StoreBrandRequest $request)
     {
-        return new BrandResource(Brand::create($request->all()));
+        return response()->json([
+            'code' => '200',
+            'message' => 'success',
+            'data' => new BrandResource(Brand::create($request->all()))
+        ]);
     }
 
     /**
@@ -39,7 +63,11 @@ class BrandController extends Controller
      */
     public function show(Brand $brand)
     {
-        //
+        return response()->json([
+            'code' => '200',
+            'message' => 'success',
+            'data' => new BrandResource($brand)
+        ]);
     }
 
     /**
@@ -55,7 +83,13 @@ class BrandController extends Controller
      */
     public function update(UpdateBrandRequest $request, Brand $brand)
     {
-        //
+        $validated = $request->validated();
+        $brand->update($validated);
+        return response()->json([
+            'code' => '200',
+            'message' => 'success',
+            'data' => new BrandResource($brand)
+        ]);
     }
 
     /**

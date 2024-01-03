@@ -27,7 +27,6 @@ class ProductFactory extends Factory
             'productId'=>$this->faker->regexify('[A-Za-z0-9]{10}'),
             'price'=> $this->faker->randomFloat('2',10,100),
             'available'=>$available,
-            'status'=> $available == 0 ? 0 : 1,
         ];
     }
 }

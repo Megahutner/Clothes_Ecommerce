@@ -18,7 +18,6 @@ class BrandResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'brandId'=> $this->brandId,
             'createdDate' => $this->created_at,
             'updatedDate' => $this->updated_at,
         ];

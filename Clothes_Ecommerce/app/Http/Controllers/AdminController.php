@@ -33,8 +33,8 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $customers = User::all();
-        return new UserCollection($customers);
+        $users = User::all();
+        return new UserCollection($users);
     }
 
     /**
@@ -42,26 +42,82 @@ class AdminController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
      * Store a newly created resource in storage.
      */
 
+     public function store(StoreAdminRequest $request) // register API
+     {
+         $user = new User();
+         $input = $request->all();
+         $user->name = $input['name'];
+         $user->password = Hash::make($input['password']);
+         $user->email = $input['email'];
+         $user->type = $input['type'];
+         $user-> save();
+         $data=[
+             "code" => 200,
+             "message" => "Success",
+             "user" => new UserResource($user)
+         ];
+         return response()->json($data);
+     }
+
+      /**
+     * ChangePassowrd.
+     */
+
+     public function resetPassword(Request $request) // register API
+     {
+        $input = $request->all();
+         $user =  User::find($input['id']);
+         if($user == null){
+            return response()->json([
+                'code' => '422',
+                'message' => 'Non-exist admin',
+            ]);
+         }
+         $newPass = $input['newPass'];
+         $recheckPass = $input['recheckPass'];
+         if($newPass != $recheckPass){
+            return response()->json([
+                'code' => '422',
+                'message' => 'Unmatched',
+            ]);
+         }
+         $user->password = Hash::make($newPass);
+         $user-> save();
+         $data=[
+             "code" => 200,
+             "message" => "Success",
+             "user" => new UserResource($user)
+         ];
+         return response()->json($data);
+     }
+
     /**
      * Display the specified resource.
      */
-    public function show(User $admin)
-    {
-        //return new CustomerResource($customer);
-        //return Response::json((new CustomerResource($customer)),'200');
-        return response()->json([
-            'code' => '200',
-            'message' => 'success',
-            'data' => $this->LoggedIn
-        ]);
-    }
+
+     public function show($id)
+     {
+         $user = User::find($id);
+         if($user == null){
+           return response()->json([
+               'code' => '422',
+               'message' => 'Non-exist admin',
+           ]);
+         }
+         return response()->json([
+             'code' => '200',
+             'message' => 'success',
+             'data' => new UserResource($user)
+         ]);
+     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -77,9 +133,28 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $admin)
+    public function destroy($id)
     {
-        //
+        $user = User::find($id);
+        if($user == null){
+          return response()->json([
+              'code' => '422',
+              'message' => 'Non-exist staff',
+          ]);
+        }
+
+        if($user == null){
+            return response()->json([
+                'code' => '422',
+                'message' => 'Non-exist staff',
+            ]);
+          }
+
+        $user->delete();
+        return response()->json([
+            'code' => '200',
+            'message' => 'success',
+        ]);
     }
 
     public function something(){

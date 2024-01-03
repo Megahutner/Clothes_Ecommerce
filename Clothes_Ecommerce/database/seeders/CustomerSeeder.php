@@ -8,6 +8,8 @@ use App\Models\Customer;
 use App\Models\PaymentLog;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Category;
+use App\Models\Brand;
 
 
 
@@ -28,5 +30,9 @@ class CustomerSeeder extends Seeder
          User::factory()
          -> count(25)
          -> create();
+
+         Category::factory()-> count(10)->create();
+         Brand::factory()-> count(10)->create();
+
     }
 }

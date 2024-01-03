@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -11,7 +14,7 @@ class StoreCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,11 +25,35 @@ class StoreCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
+            'name' => ['required',"unique:customers"],
+            'password' => ['required'],
             'address' => ['required'],
             'city' => ['required'],
-            'dob'=> ['required'],
-            'email' => ['required','email'=> 'email:rfc,dns'],
+            //'dob'=> ['required'],
+            'email' => ['required',"unique:customers",'email'=> 'email:rfc,dns'],
         ];
     }
+
+    public function messages(){
+        return [
+            'name.unique'=> "Name already exists",
+            'password.required'=> "Password is required",
+            'name.required'=> "Name is required",
+            'address'=> "Address is required",
+            'city'=> "City is required",
+            'email.unique'=> "Email already exists",
+            'email.required'=> "Email is required",
+        ];
+    }
+
+    protected function failedValidation(Validator $validator){
+        $errors = (new ValidationException($validator))->errors();
+        throw new HttpResponseException(response()->json(
+            [
+                'message'=> $errors,
+                'code'=> 422,
+            ]
+        ));
+
+    } 
 }

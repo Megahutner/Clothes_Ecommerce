@@ -12,10 +12,9 @@ class Brand extends Model
     protected $fillable = [
         'name',
         'description',
-        'brandId'
     ];
 
-    public function brand_category_products(){
-        return $this-> hasMany(brand_category_product::class);
-    }
+    // public function brand_category_products(){
+    //     return $this-> hasMany(brand_category_product::class);
+    // }
 }

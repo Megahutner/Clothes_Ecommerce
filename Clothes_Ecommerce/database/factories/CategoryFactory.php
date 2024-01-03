@@ -22,7 +22,6 @@ class CategoryFactory extends Factory
             return [
                 'name' => $name,
                 'description' => $this->faker->text(),
-                'categoryId' => $this->faker->regexify('[A-Za-z0-9]{10}'),
             ];
         
     }
