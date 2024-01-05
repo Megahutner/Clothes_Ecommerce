@@ -43,6 +43,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(
     Route::post('customers/bulk',['uses' => 'CustomerController@bulkStore']);
 
 
+    Route::get('customerTransaction', ['uses'=>'TransactionController@customerTransaction']);
     Route::post('transactions/addToCart', ['uses'=>'TransactionController@addToCart']);
     Route::post('transactions/removeFromCart', ['uses'=>'TransactionController@removeFromCart']);
     Route::post('transactions/makeTransaction', ['uses'=>'TransactionController@makeTransaction']);
@@ -57,6 +58,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(
     Route::get('basic/latestCustomers',['uses' => 'BasicController@latestCustomerReg']);
     Route::get('basic/latestTransactions',['uses' => 'BasicController@latestTransactions']);
     Route::get('basic/currentMonthStatistic',['uses' => 'BasicController@currentMonthStatistic']);
+    Route::get('basic/getEnumCategories',['uses' => 'BasicController@getEnumCategories']);
+
     
     Route::get('check',['uses' => 'AdminController@checkToken']);
     Route::get('token',['uses' => 'AdminController@getToken']);

@@ -56,7 +56,7 @@ class CustomerController extends Controller
         $customer->name = $input['name'];
         $customer->password = Hash::make($input['password']);
         $customer->address = $input['address'];
-        $customer->city = $input['city'];
+        $customer->phone = $input['phone'];
         $customer->email = $input['email'];
         $token = Str::random(60);
         $customer->remember_token= $token;
@@ -176,7 +176,7 @@ class CustomerController extends Controller
         //return new CustomerResource($customer);
         //return Response::json((new CustomerResource($customer)),'200');
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new CustomerResource($customer)
         ]);

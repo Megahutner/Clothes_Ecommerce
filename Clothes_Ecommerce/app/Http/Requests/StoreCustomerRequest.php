@@ -28,8 +28,7 @@ class StoreCustomerRequest extends FormRequest
             'name' => ['required',"unique:customers"],
             'password' => ['required'],
             'address' => ['required'],
-            'city' => ['required'],
-            //'dob'=> ['required'],
+            'phone'=> ['required'],
             'email' => ['required',"unique:customers",'email'=> 'email:rfc,dns'],
         ];
     }
@@ -40,7 +39,7 @@ class StoreCustomerRequest extends FormRequest
             'password.required'=> "Password is required",
             'name.required'=> "Name is required",
             'address'=> "Address is required",
-            'city'=> "City is required",
+            'phone'=> "Phone is required",
             'email.unique'=> "Email already exists",
             'email.required'=> "Email is required",
         ];

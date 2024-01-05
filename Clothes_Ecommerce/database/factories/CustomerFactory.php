@@ -22,10 +22,10 @@ class CustomerFactory extends Factory
         $endTime = '2010-12-31';
         return [
             'name' => $this->faker->name(),
-            'city' => $this->faker->city(),
+            //'city' => $this->faker->city(),
             'email' => $this->faker->email(),
             'address' => $this->faker->address(),
-            'dob'=> $this->faker->date('Y-m-d',rand(strtotime($startTime),strtotime($endTime))),
+            //'dob'=> $this->faker->date('Y-m-d',rand(strtotime($startTime),strtotime($endTime))),
             'phone'=>$this->faker->phoneNumber(),
             'password'=>$this->faker->password(),
             'status'=>$status,

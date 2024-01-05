@@ -31,7 +31,7 @@ class CategoryController extends Controller
         //     $customers = $customers->with('transactions');
         // }
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new CategoryCollection($categories->paginate()-> appends($request->query()))
         ]);
@@ -52,7 +52,7 @@ class CategoryController extends Controller
     public function store(StoreCategoryRequest $request)
     {
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new CategoryResource(Category::create($request->all()))
         ]);
@@ -73,12 +73,12 @@ class CategoryController extends Controller
           $category = Category::find($id);
           if($category == null){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Non-exist category',
             ]);
           }
           return response()->json([
-              'code' => '200',
+              'code' => 200,
               'message' => 'success',
               'data' => new CategoryResource($category)
           ]);
@@ -100,7 +100,7 @@ class CategoryController extends Controller
         $validated = $request->validated();
         $category->update($validated);
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new CategoryResource($category)
         ]);
@@ -114,13 +114,13 @@ class CategoryController extends Controller
         $category = Category::find($id);
         if($category == null){
           return response()->json([
-              'code' => '422',
+              'code' => 422,
               'message' => 'Non-exist category',
           ]);
         }
         $category->delete();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
         ]);
     }

@@ -32,11 +32,16 @@ class TransactionController extends Controller
         $filter = new TransactionFilter();
         $queryItems = $filter->transform($request);  //[['column','operator','value']]
         if(count($queryItems)==0){
-            return new TransactionCollection(Transaction::paginate());
+            return new TransactionCollection(Transaction::orderBy('id','DESC')->paginate());
         }
         else{
-            $transactions = Transaction::where($queryItems)->paginate();
-            return new TransactionCollection($transactions->appends($request->query()));
+            $transactions = Transaction::where($queryItems)->orderBy('id','DESC')->paginate();
+            return response()->json([
+                'code' => 200,
+                'message' => 'success',
+                'data' => new TransactionCollection($transactions->appends($request->query()))
+            ]);
+            
         }
     }
     /**
@@ -63,12 +68,12 @@ class TransactionController extends Controller
         $transaction = Transaction::find($id);
         if($transaction == null){
           return response()->json([
-              'code' => '422',
+              'code' => 422,
               'message' => 'Non-exist transaction',
           ]);
         }
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new TransactionResource($transaction)
         ]);
@@ -103,7 +108,7 @@ class TransactionController extends Controller
         $input = $request->all();
         if($request->bearerToken()== null){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Non-exist customer',
             ]);
         } 
@@ -111,13 +116,13 @@ class TransactionController extends Controller
             $product = Product::find($input['product_id']);
             if($product == null){ // check null
                 return response()->json([
-                    'code' => '422',
+                    'code' => 422,
                     'message' => 'Non-exist product',
                 ]);
             }
             if($product->available < $input['amount']){ // check if db has enough product to sell
                 return response()->json([
-                    'code' => '422',
+                    'code' => 422,
                     'message' => 'Not enough product',
                 ]);
             }
@@ -141,7 +146,7 @@ class TransactionController extends Controller
             $product->available -= $order->amount;
             $product->save();
             return response()->json([
-                'code' => '200',
+                'code' => 200,
                 'message' => 'success',
                 'data' => new TransactionResource($transaction)
             ]);
@@ -161,7 +166,7 @@ class TransactionController extends Controller
             $product->available -= $order->amount;
             $product->save();
             return response()->json([
-                'code' => '200',
+                'code' => 200,
                 'message' => 'success',
                 'data' => new TransactionResource($latestTransaction)
             ]);
@@ -170,7 +175,7 @@ class TransactionController extends Controller
         }
         catch(Exception $ex){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => $ex,
             ]);
         }
@@ -184,14 +189,14 @@ class TransactionController extends Controller
             $order = $latestTransaction->transaction_products()->where('id','=',$input['order_id'])->first();
             if($order == null){
                 return response()->json([
-                    'code' => '422',
+                    'code' => 422,
                     'message' => 'Non-exist order',
                 ]);
             }
             $product = Product::find($order->product_id);
             if($product == null){ // check null
                 return response()->json([
-                    'code' => '422',
+                    'code' => 422,
                     'message' => 'Non-exist product',
                 ]);
             }
@@ -201,14 +206,14 @@ class TransactionController extends Controller
             $product->save();
             $order->delete();
             return response()->json([
-                'code' => '200',
+                'code' => 200,
                 'message' => 'success',
                 'data' => new TransactionResource($latestTransaction)
             ]);
         }
         catch(Exception $ex){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => $ex,
             ]);
         }
@@ -219,20 +224,20 @@ class TransactionController extends Controller
         $transaction = Transaction::find($input['transaction_id']);
         if($transaction == null){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Non-exist transaction',
             ]);
         }
         if($transaction->status != 0){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Invalid transaction',
             ]);
         }
         $transaction->status = 1; // Pending
         $transaction->save();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new TransactionResource($transaction)
         ]);
@@ -244,13 +249,13 @@ class TransactionController extends Controller
             $transaction = Transaction::find($request->transaction_id);
         if($transaction == null ){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Non-exist transaction',
             ]);
         }
         if( $transaction->status != 1){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Invalid transaction',
             ]);
         }
@@ -279,7 +284,7 @@ class TransactionController extends Controller
             //     'payment_method'=> 'pm_card_visa'
             // ]);
             return response()->json([
-                'code' => '200',
+                'code' => 200,
                 'message' => 'success',
                 'data' => new TransactionResource($transaction),
             ]);
@@ -287,7 +292,7 @@ class TransactionController extends Controller
         catch (Exception $ex)
         {
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => $ex,
             ]);
         }
@@ -299,13 +304,13 @@ class TransactionController extends Controller
             $transaction = Transaction::find($input['transaction_id']);
             if($transaction == null){
                 return response()->json([
-                    'code' => '422',
+                    'code' => 422,
                     'message' => 'Non-exist transaction',
                 ]);
             }
             if($transaction->status == 2 && $transaction->status == 0 ){
                 return response()->json([
-                    'code' => '422',
+                    'code' => 422,
                     'message' => 'Invalid transaction',
                 ]);
             }
@@ -313,7 +318,7 @@ class TransactionController extends Controller
                 $product = Product::find($order->product_id);
                 if($product == null){ // check null
                     return response()->json([
-                        'code' => '422',
+                        'code' => 422,
                         'message' => 'Non-exist product',
                     ]);
                 }
@@ -323,17 +328,42 @@ class TransactionController extends Controller
             $transaction->status = 3;
             $transaction->save();
             return response()->json([
-                'code' => '200',
+                'code' => 200,
                 'message' => 'success',
                 'data' => new TransactionResource($transaction)
             ]);
         }
         catch(Exception $ex){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => $ex,
             ]);
         }
+    }
+
+    public function customerTransaction(Request $request){
+        if($request->bearerToken()== null){
+            return response()->json([
+                'code' => 422,
+                'message' => 'Non-exist customer',
+            ]);
+        } 
+        try
+        {
+            $transactions = Customer::where('remember_token','=',$request->bearerToken())->first()->transactions()->orderBy('id')->get();
+            return response()->json([
+                'code' => 200,
+                'message' => 'success',
+                'data' => new TransactionCollection($transactions)
+            ]);
+        }
+        catch(Exception $ex){
+            return response()->json([
+                'code' => 422,
+                'message' => $ex,
+            ]);
+        }
+
     }
 
 

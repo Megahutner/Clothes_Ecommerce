@@ -13,7 +13,7 @@ use App\Http\Resources\Product\ProductResource;
 use App\Http\Resources\Product\ProductCollection;
 use App\Http\Resources\Category\CategoryCollection;
 
-
+use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use App\Filter\ProductFilter;
 use App\Filter\CategoryFilter;
@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\Token;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 
 class ProductController extends Controller
 {
@@ -39,7 +42,7 @@ class ProductController extends Controller
         //     $customers = $customers->with('transactions');
         // }
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => $products
         ]);
@@ -67,14 +70,36 @@ class ProductController extends Controller
             ]);   
         }
         $products = [];
-        $product = Product::create($request->all());
+        if($request->file('image') != null){
+            $image_path = $request->file('image')->store('image', 'public');
+            $products = [];
+            $product = Product::create([
+                //$request->all()
+                'name' => $input['name'],
+                'description' => $input['description'],
+                'price' => $input['price'],
+                'available' => $input['available'],
+                'image' =>$image_path,
+                'category_id'=> $input['category_id']
+            ]);
+        }
+        else{
+            $product = Product::create([
+                //$request->all()
+                'name' => $input['name'],
+                'description' => $input['description'],
+                'price' => $input['price'],
+                'available' => $input['available'],
+                'category_id'=> $input['category_id']
+            ]);
+        }
         // array_push($products,$product);
         // $category->products()->saveMany($products);
         $product->category()->associate($category);
         $product->save();
         $category->save();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new ProductResource($product)
         ]);
@@ -88,12 +113,12 @@ class ProductController extends Controller
         $product = Product::find($id);
         if($product == null){
           return response()->json([
-              'code' => '422',
+              'code' => 422,
               'message' => 'Non-exist product',
           ]);
         }
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new ProductResource($product)
         ]);
@@ -107,7 +132,7 @@ class ProductController extends Controller
         $validated = $request->validated();
         $product->update($validated);
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new ProductResource($product)
         ]);
@@ -121,7 +146,7 @@ class ProductController extends Controller
         $validated = $request->validated();
         $product->update($validated);
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' =>new ProductResource($product)
         ]);
@@ -141,7 +166,7 @@ class ProductController extends Controller
         }
         $product->delete();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
         ]);
     }
@@ -155,7 +180,7 @@ class ProductController extends Controller
         //     $customers = $customers->with('transactions');
         // }
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => new CategoryCollection($products->paginate()->appends($request->query())) 
         ]);

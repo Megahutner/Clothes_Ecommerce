@@ -28,10 +28,9 @@ class BasicController extends Controller
             "customer" => $customer->count(),
             "staff" => $staff->count(),
             "transaction" => $transaction->count(),
-
         ];
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => $data
         ]);
@@ -39,10 +38,10 @@ class BasicController extends Controller
 
     public function latestCustomerReg(){
         $customer = Customer::where('status','=','Active')
-        ->select('name','email','city','phone','created_at','updated_at')
+        ->select('name','email','address','phone','created_at')
         ->latest()->take(10)->get();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => $customer
         ]);
@@ -53,28 +52,38 @@ class BasicController extends Controller
         ->select('id','transactionId','total','payment','updated_at')
         ->latest()->take(10)->get();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
             'data' => $transaction
         ]);
     }
 
-    public function currentMonthStatistic(Request $request){
+
+    public function getEnumCategories(){
+        $category = Category::select('id','name')->get();
+        return response()->json([
+            'code' => 200,
+            'message' => 'success',
+            'data' => $category
+        ]);
+    }
+
+    public function currentMonthStatistic(){
         $transactions = Transaction::where('status','=','2')
-        ->whereBetween('updated_at',[Carbon::now()->addDays(-1)->startOfDay(),Carbon::now()->addDays(1)->endOfDay()])->get()
+        ->whereBetween('updated_at',[Carbon::now()->addDays(-1)->startOfDay(),Carbon::now()->addDays(-1)->endOfDay()])->get()
         ->groupBy(function($val){
             return Carbon::parse($val->updated_at)->format('d');
         });
         if($transactions->count() > 0){
             return response()->json([
-                'code' => '200',
+                'code' => 200,
                 'message' => 'success',
                 'data' => $transactions
             ]);
         }
         else{
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'failed',
             ]);
         }

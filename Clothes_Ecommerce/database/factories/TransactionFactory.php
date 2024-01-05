@@ -19,7 +19,7 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         $status = $this->faker->randomElement([1,2,3]);
-        $payment =$this->faker->randomElement(['ZaloPay','Momo','Credit Card']);
+        $payment =$this->faker->randomElement(['Visa','Mastercard']);
         $date = $this->faker->dateTimeThisYear();
         return [
             'customer_id'=> Customer::factory(),

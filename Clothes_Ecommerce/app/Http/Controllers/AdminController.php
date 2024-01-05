@@ -76,7 +76,7 @@ class AdminController extends Controller
          $user =  User::find($input['id']);
          if($user == null){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Non-exist admin',
             ]);
          }
@@ -84,7 +84,7 @@ class AdminController extends Controller
          $recheckPass = $input['recheckPass'];
          if($newPass != $recheckPass){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Unmatched',
             ]);
          }
@@ -107,12 +107,12 @@ class AdminController extends Controller
          $user = User::find($id);
          if($user == null){
            return response()->json([
-               'code' => '422',
+               'code' => 422,
                'message' => 'Non-exist admin',
            ]);
          }
          return response()->json([
-             'code' => '200',
+             'code' => 200,
              'message' => 'success',
              'data' => new UserResource($user)
          ]);
@@ -138,21 +138,21 @@ class AdminController extends Controller
         $user = User::find($id);
         if($user == null){
           return response()->json([
-              'code' => '422',
+              'code' => 422,
               'message' => 'Non-exist staff',
           ]);
         }
 
         if($user == null){
             return response()->json([
-                'code' => '422',
+                'code' => 422,
                 'message' => 'Non-exist staff',
             ]);
           }
 
         $user->delete();
         return response()->json([
-            'code' => '200',
+            'code' => 200,
             'message' => 'success',
         ]);
     }
@@ -232,17 +232,18 @@ class AdminController extends Controller
                 $model->save();
                 $user=[
                     "name" => $model->name,
+                    "type"=> $model->type,
                 ];
                 $data=[
                     "code" => 200,
-                    "status" => "Success",
+                    "message" => "Success",
                     "api_token" =>  $api_token,
                     "user" => $user
                 ];
             } else {
                 $data=[
                     "code" => 401,
-                    "status" => "Password did not match.",
+                    "message" => "Password did not match.",
                     "user" => null
                 ];
             }
@@ -250,7 +251,7 @@ class AdminController extends Controller
         if(empty($model)) {
             $data=[
                 "code" => 402,
-                "status" => "Email did not match.",
+                "message" => "An error has occured",
                 "user" => null
             ];
         }        
