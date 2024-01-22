@@ -25,7 +25,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
+            'email' => ['required'],
             'code' => ['required'],
             'newPassword' => ['required'],
         ];
@@ -33,7 +33,7 @@ class ResetPasswordRequest extends FormRequest
 
     public function messages(){
         return [
-            'name.required'=> "Name is required",
+            'email.required'=> "Email is required",
             'code.required'=> "Code is required",
             'newPasswrod.required'=> "New password is required",
         ];

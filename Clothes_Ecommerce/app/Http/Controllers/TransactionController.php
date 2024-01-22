@@ -103,6 +103,44 @@ class TransactionController extends Controller
         //
     }
 
+    public function getCustomerCart(Request $request){
+        $input = $request->all();
+        if($request->bearerToken()== null){
+            return response()->json([
+                'code' => 422,
+                'message' => 'Non-exist customer',
+            ]);
+        } 
+        try{
+            $customer = Customer::where('remember_token','=',$request->bearerToken())->first();
+            if($customer == null) {
+                return response()->json([
+                    'code' => 422,
+                    'message' => 'Non-exist customer',
+                ]);
+            }
+            $latestTransaction = $customer->transactions()->latest()->first();
+            if ($latestTransaction == null || $latestTransaction->status != 0){
+                return response()->json([
+                    'code' => 422,
+                    'message' => 'Non-exist cart',
+                ]);
+            }
+            return response()->json([
+                'code' => 200,
+                'message' => 'success',
+                'data' => new TransactionResource($latestTransaction)
+            ]);
+        }
+        catch(Exeption $ex){
+            return response()->json([
+                'code' => 422,
+                'message' => $ex,
+            ]);
+        }
+
+    }
+
 
     public function addToCart(Request $request){
         $input = $request->all();
@@ -129,13 +167,14 @@ class TransactionController extends Controller
             $latestTransaction = Customer::where('remember_token','=',$request->bearerToken())->first()->transactions()->latest()->first();
         if ($latestTransaction == null || $latestTransaction->status != 0){ // create new Transaction as a cart
             $transaction = new Transaction();
+            $transaction->transactionId = Str::random(16);
             $transaction->customer_id= Customer::where('remember_token','=',$request->bearerToken())->first()->id;
-            $order = new transaction_product();
+            $order = new transaction_product(); 
             $transaction->save();
             $order->transaction_id = $transaction->id;
             $order->product_id = $input['product_id'];
             $order->product_name = $product->name;
-            $order->price = $input['price'];
+            $order->price = $product->price;
             $order->amount = $input['amount'];
             $order->created_at = Carbon::now();
             $order->updated_at = Carbon::now();
@@ -153,18 +192,29 @@ class TransactionController extends Controller
             
         }
         else{ // add to cart
-            $order = new transaction_product();
-            $order->transaction_id = $latestTransaction->id;
-            $order->product_id = $input['product_id'];
-            $order->product_name = $product->name;
-            $order->price = $input['price'];
-            $order->amount = $input['amount'];
-            $order->transaction()->associate($latestTransaction);
-            $order->save();
-            $latestTransaction->total += $order->amount * $order->price;
-            $latestTransaction->save();
-            $product->available -= $order->amount;
-            $product->save();
+            $same_order = $latestTransaction->transaction_products()->where('product_id','=',$product->id)->first();
+            if($same_order!= null){ // add to cart a product that is already in cart
+                $same_order->amount += $input['amount'];
+                $same_order->save();
+                $latestTransaction->total += $same_order->price;
+                $latestTransaction->save();
+                $product->available--;
+                $product->save();
+            }
+            else{
+                $order = new transaction_product();
+                $order->transaction_id = $latestTransaction->id;
+                $order->product_id = $input['product_id'];
+                $order->product_name = $product->name;
+                $order->price = $product->price;
+                $order->amount = $input['amount'];
+                $order->transaction()->associate($latestTransaction);
+                $order->save();
+                $latestTransaction->total += $order->amount * $order->price;
+                $latestTransaction->save();
+                $product->available -= $order->amount;
+                $product->save();
+            }
             return response()->json([
                 'code' => 200,
                 'message' => 'success',
@@ -205,6 +255,13 @@ class TransactionController extends Controller
             $latestTransaction->save();
             $product->save();
             $order->delete();
+            if($latestTransaction->transaction_products()->count()== 0){
+                $latestTransaction->delete();
+                return response()->json([
+                    'code' => 200,
+                    'message' => 'success',
+                ]);
+            }
             return response()->json([
                 'code' => 200,
                 'message' => 'success',
@@ -244,21 +301,22 @@ class TransactionController extends Controller
     }
 
     public function makeTransaction (Request $request){
+        $input = $request->all();
         try
         {
-            $transaction = Transaction::find($request->transaction_id);
+            $transaction = Transaction::find($input['transaction_id']);
         if($transaction == null ){
             return response()->json([
                 'code' => 422,
                 'message' => 'Non-exist transaction',
             ]);
         }
-        if( $transaction->status != 1){
-            return response()->json([
-                'code' => 422,
-                'message' => 'Invalid transaction',
-            ]);
-        }
+        // if( $transaction->status != 1){
+        //     return response()->json([
+        //         'code' => 422,
+        //         'message' => 'Invalid transaction',
+        //     ]);
+        // }
         $transaction->status = 2;
         $transaction->save();
             // $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
@@ -308,7 +366,7 @@ class TransactionController extends Controller
                     'message' => 'Non-exist transaction',
                 ]);
             }
-            if($transaction->status == 2 && $transaction->status == 0 ){
+            if($transaction->status == 2 && $transaction->status == 3 ){
                 return response()->json([
                     'code' => 422,
                     'message' => 'Invalid transaction',
@@ -350,7 +408,7 @@ class TransactionController extends Controller
         } 
         try
         {
-            $transactions = Customer::where('remember_token','=',$request->bearerToken())->first()->transactions()->orderBy('id')->get();
+            $transactions = Customer::where('remember_token','=',$request->bearerToken())->first()->transactions()->where('status','!=','0')->orderBy('id')->get();
             return response()->json([
                 'code' => 200,
                 'message' => 'success',

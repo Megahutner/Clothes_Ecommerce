@@ -59,6 +59,16 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+     public function uploadImage(Request $request){
+        $image_path = $request->file('image')->store('image', 'public');
+        return response()->json([
+            'code' => 200,
+            'message' => 'success',
+            'data' => $image_path
+        ]);
+
+     }
     public function store(StoreProductRequest $request)
     {
         $input = $request->all();
@@ -70,8 +80,7 @@ class ProductController extends Controller
             ]);   
         }
         $products = [];
-        if($request->file('image') != null){
-            $image_path = $request->file('image')->store('image', 'public');
+        if($input['image'] != null){
             $products = [];
             $product = Product::create([
                 //$request->all()
@@ -79,7 +88,7 @@ class ProductController extends Controller
                 'description' => $input['description'],
                 'price' => $input['price'],
                 'available' => $input['available'],
-                'image' =>$image_path,
+                'image' =>$input['image'],
                 'category_id'=> $input['category_id']
             ]);
         }

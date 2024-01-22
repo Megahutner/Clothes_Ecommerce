@@ -20,9 +20,18 @@ use App\Mail\UserVerificationMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Token;
 use Carbon\Carbon;
+use App\Services\UserService;
 
 class CustomerController extends Controller
 {
+    protected $userService;
+
+    // Inject the service into the constructor
+    public function __construct(UserService $userService)
+    {
+        // Assign the service instance to the class property
+        $this->userService = $userService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -79,7 +88,7 @@ class CustomerController extends Controller
             "code" => 0,
             "message" => "",
         ];
-        $customer = Customer::where('name', '=', $input['name'])->first();
+        $customer = Customer::where('email', '=', $input['email'])->first();
         if ($customer == null){
             $data['code'] = 422;
             $data['message'] = "No customer found";
@@ -99,7 +108,7 @@ class CustomerController extends Controller
             "message" => "",
         ];
         $input = $request->all();
-        $customer = Customer::where('name', '=', $input['name'])->first();
+        $customer = Customer::where('email', '=', $input['email'])->first();
         if ($customer == null){
             $data['code'] = 422;
             $data['message'] = "No customer found";
@@ -211,13 +220,18 @@ class CustomerController extends Controller
         $name=$request->input('name');
         $password=$request->input('password');        
         $model = Customer::where('name', '=', $name)->first();
-        //dd($email);    
         if (!empty($model)) {
             $cryptedpassword=$model->password;
             if (Hash::check($password, $cryptedpassword)) {
+                if($model->status == 'Inactive'){
+                    $data=[
+                        "code" => 400,
+                        "status" => "Inactive customer",
+                        "user" => null
+                    ];
+                }
                
                 $api_token = Str::random(60);
-                //$this->LoggedIn->push($api_token);
                 $existedToken = Token::where('token','=',$model->remember_token)->first();
                 if($existedToken != null){
                     $existedToken-> token = $api_token;
@@ -226,7 +240,7 @@ class CustomerController extends Controller
                 else{
                     $token = new Token;
                     $token->token = $api_token;
-                    $token->expires_at = Carbon::now()->addMinutes(2) ;
+                    $token->expires_at = Carbon::now()->addDays(1) ;
                     $token->save();
                 }
                 $model->remember_token= $api_token;
@@ -235,7 +249,7 @@ class CustomerController extends Controller
                     "code" => 200,
                     "status" => "Success",
                     "api_token" =>  $api_token,
-                    "user" => $model->name
+                    "user" => new CustomerResource($model)
                 ];
             } else {
                 $data=[

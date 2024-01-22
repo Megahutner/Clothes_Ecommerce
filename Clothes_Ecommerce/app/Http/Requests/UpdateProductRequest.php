@@ -27,7 +27,7 @@ class UpdateProductRequest extends FormRequest
                 'description' => ['sometimes'],
                 'price' => ['required'],
                 'available'=> ['sometimes'],
-                'image'=> ['sometimes','image','mimes:jpg,png,jpeg,gif,svg|max:2048'],
+                'image'=> ['sometimes'],
                 'category_id'=> ['required'],
         ];
     }

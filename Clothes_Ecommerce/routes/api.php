@@ -23,13 +23,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(
     // Laravel's premapped CRUD APIs
     Route::apiResource('users', AdminController::class);
     Route::apiResource('customers', CustomerController::class);
-    Route::apiResource('brands', BrandController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('products', ProductController::class);
     Route::apiResource('transactions', TransactionController::class);
 
 
     // Custom APIs
+    Route::get('rootAccount',['uses' => 'AdminController@rootAccount']);
     Route::post('users/login',['uses' => 'AdminController@login']);
     Route::post('users/logout',['uses' => 'AdminController@logout']);
     Route::post('users/reset',['uses' => 'AdminController@resetPassword']);
@@ -45,6 +45,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(
 
     Route::get('customerTransaction', ['uses'=>'TransactionController@customerTransaction']);
     Route::post('transactions/addToCart', ['uses'=>'TransactionController@addToCart']);
+    Route::post("products/uploadImage",['uses'=>'ProductController@uploadImage']);
     Route::post('transactions/removeFromCart', ['uses'=>'TransactionController@removeFromCart']);
     Route::post('transactions/makeTransaction', ['uses'=>'TransactionController@makeTransaction']);
     Route::post('transactions/toCheckOut', ['uses'=>'TransactionController@toCheckOut']);
@@ -62,9 +63,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'],function(
 
     
     Route::get('check',['uses' => 'AdminController@checkToken']);
+
+    Route::get('cart',['uses' => 'TransactionController@getCustomerCart']);     
+
     Route::get('token',['uses' => 'AdminController@getToken']);
 
     Route::get('show',['uses' => 'ProductController@customerShow']);
+
+
 
 
 });

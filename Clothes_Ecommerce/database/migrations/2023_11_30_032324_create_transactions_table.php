@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->integer('customer_id');
-            $table->string('transactionId')->default(Str::random(40));
+            $table->string('transactionId');
             $table->float('total')->default = 0;
             $table->string('payment')->nullable();
             $table->tinyInteger('status')->default(0);
